@@ -1,15 +1,12 @@
 #if defined(UNICODE) && !defined(_UNICODE)
-#define _UNICODE
+    #define _UNICODE
 #elif defined(_UNICODE) && !defined(UNICODE)
-#define UNICODE
+    #define UNICODE
 #endif
 
 #include <tchar.h>
 #include <windows.h>
-#include<iostream>
 #include<math.h>
-#include<bits/stdc++.h>
-using namespace std;
 
 /*  Declare Windows procedure  */
 LRESULT CALLBACK WindowProcedure (HWND, UINT, WPARAM, LPARAM);
@@ -18,9 +15,9 @@ LRESULT CALLBACK WindowProcedure (HWND, UINT, WPARAM, LPARAM);
 TCHAR szClassName[ ] = _T("CodeBlocksWindowsApp");
 
 int WINAPI WinMain (HINSTANCE hThisInstance,
-                    HINSTANCE hPrevInstance,
-                    LPSTR lpszArgument,
-                    int nCmdShow)
+                     HINSTANCE hPrevInstance,
+                     LPSTR lpszArgument,
+                     int nCmdShow)
 {
     HWND hwnd;               /* This is the handle for our window */
     MSG messages;            /* Here messages to the application are saved */
@@ -51,12 +48,12 @@ int WINAPI WinMain (HINSTANCE hThisInstance,
     hwnd = CreateWindowEx (
            0,                   /* Extended possibilites for variation */
            szClassName,         /* Classname */
-           _T("Code::Blocks Template Windows App"),       /* Title Text */
+           _T("Task 2: Circle with 8 parts"),       /* Title Text */
            WS_OVERLAPPEDWINDOW, /* default window */
            CW_USEDEFAULT,       /* Windows decides the position */
            CW_USEDEFAULT,       /* where the window ends up on the screen */
-           544,                 /* The programs width */
-           375,                 /* and height in pixels */
+           800,                 /* The programs width */
+           600,                 /* and height in pixels */
            HWND_DESKTOP,        /* The window is a child-window to desktop */
            NULL,                /* No menu */
            hThisInstance,       /* Program Instance handler */
@@ -79,50 +76,27 @@ int WINAPI WinMain (HINSTANCE hThisInstance,
     return messages.wParam;
 }
 
-void swap(int& x,int& y){
-    int tmp=x;
-    x=y;
-    y=tmp;
-}
-int Round(double x){return (int)(x+0.5);}
-
-void parametricline(HDC hdc,int x1,int y1,int x2,int y2){
-    double dx=x2-x1;
-    double dy=y2-y1;
-    for(double t=0;t<1;t+=0.001){
-        int x=x1+(dx*t);
-        int y=y1+(dy*t);
-        SetPixel(hdc,x,y,RGB(100,0,0));
-    }
-
-}
-
-void DrawLine(HDC hdc,int xs,int ys,int xe,int ye,COLORREF color){
-    int dx=xe-xs;
-    int dy=ye-ys;
-    double slope=(double)dy/dx;
-    if(xs>xe){
-    swap(xs,xe);
-    swap(ys,ye);
-    }
-
-    for(int x=xs;x<=xe;x++){
-    int y=round(ys+(x-xs)*slope);
-    SetPixel(hdc,x,y,color);
+void parametricline(HDC hdc, double x1, double y1, double x2, double y2) {
+    double dx = x2 - x1;
+    double dy = y2 - y1;
+    for (double t = 0; t < 1; t += 0.001) {
+        int x = x1 + (dx * t);
+        int y = y1 + (dy * t);
+        SetPixel(hdc, x, y, RGB(0,0,0));
     }
 }
 
 void draw8points(HDC hdc,int x,int y,int xc,int yc)
 {
-    SetPixel(hdc,xc+x,yc+y,RGB(100,0,0));
-    SetPixel(hdc,xc-x,yc+y,RGB(100,0,0));
-    SetPixel(hdc,xc+x,yc-y,RGB(100,0,0));
-    SetPixel(hdc,xc-x,yc-y,RGB(100,0,0));
+    SetPixel(hdc, xc+x, yc+y, RGB(0,0,0));
+    SetPixel(hdc, xc-x, yc+y, RGB(0,0,0));
+    SetPixel(hdc, xc+x, yc-y, RGB(0,0,0));
+    SetPixel(hdc, xc-x, yc-y, RGB(0,0,0));
 
-    SetPixel(hdc,xc-y,yc+x,RGB(100,0,0));
-    SetPixel(hdc,xc+y,yc-x,RGB(100,0,0));
-    SetPixel(hdc,xc+y,yc+x,RGB(100,0,0));
-    SetPixel(hdc,xc-y,yc-x,RGB(100,0,0));
+    SetPixel(hdc, xc-y, yc+x, RGB(0,0,0));
+    SetPixel(hdc, xc+y, yc-x, RGB(0,0,0));
+    SetPixel(hdc, xc+y, yc+x, RGB(0,0,0));
+    SetPixel(hdc, xc-y, yc-x, RGB(0,0,0));
 }
 
 void midpoint(HDC hdc,int xc,int yc,int r)
@@ -130,44 +104,78 @@ void midpoint(HDC hdc,int xc,int yc,int r)
     int x=0;
     int y=r;
     double d=1-r;
+
     while(x<y){
+
         if(d<=0){
             d=d+2*x+3;
             x++;
         }
+
         else{
             d=d+2*(x-y)+5;
             x++;
             y--;
         }
+
         draw8points(hdc,x,y,xc,yc);
     }
 
 }
+
+const double PI = 3.1415926;
+
+void drawEightLines(HDC hdc, int originX, int originY, int radius)
+{
+
+    parametricline(hdc, originX, originY, originX, originY + radius); // down
+    parametricline(hdc, originX, originY, originX, originY - radius); // up
+    parametricline(hdc, originX, originY, originX + radius, originY); // right
+    parametricline(hdc, originX, originY, originX - radius, originY); // left
+
+    // drawing the 4 diagonal lines
+    for(int degree = 45; degree < 360; degree += 90){
+        double rad = degree * PI / 180.0; // converting to radians
+
+        parametricline(hdc, originX, originY,
+                       originX + (radius * sin(rad)), originY + (radius * cos(rad)));
+    }
+
+}
+
+
 /*  This function is called by the Windows function DispatchMessage()  */
+int rr, x_1, y_1, x_2, y_2;
 
-
-int rr,x1,y1,x2,y2;
 LRESULT CALLBACK WindowProcedure (HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
-{   HDC hdc=GetDC(hwnd);
+{
+    HDC hdc = GetDC(hwnd);
+
     switch (message)                  /* handle the messages */
-   {
-    case WM_LBUTTONDBLCLK:
-        x1=LOWORD(lParam);
-        y1=HIWORD(lParam);
-        break;
-    case WM_RBUTTONDBLCLK:
-        x2=LOWORD(lParam);
-        y2=HIWORD(lParam);
-        rr=sqrt(pow((x2-x1),2)+pow((y2-y1),2));
-        midpoint(hdc,x1,y1,rr);
-        parametricline(hdc,x1,y1,x2,y2);
-        break;
+    {
+
+        case WM_LBUTTONDBLCLK:
+            x_1 = LOWORD(lParam);
+            y_1 = HIWORD(lParam);
+            break;
+
+        case WM_RBUTTONDBLCLK:
+            x_2 = LOWORD(lParam);
+            y_2 = HIWORD(lParam);
+
+            rr = sqrt(pow((x_2-x_1), 2) + pow((y_2-y_1), 2));
+            midpoint(hdc, x_1, y_1, rr);
+            drawEightLines(hdc, x_1, y_1, rr);
+
+            break;
+
         case WM_DESTROY:
             PostQuitMessage (0);       /* send a WM_QUIT to the message queue */
             break;
+
         default:                      /* for messages that we don't deal with */
             return DefWindowProc (hwnd, message, wParam, lParam);
     }
+
     return 0;
 }

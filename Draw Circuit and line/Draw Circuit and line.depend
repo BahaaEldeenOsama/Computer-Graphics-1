@@ -1,0 +1,6 @@
+# depslib dependency file v1.0
+1620599086 source:d:\time machine\fcai\3rd year\2nd term\computer graphics-1\assignments\assignment-1\computer-graphics-1\draw circuit and line\main.cpp
+	<tchar.h>
+	<windows.h>
+	<math.h>
+
